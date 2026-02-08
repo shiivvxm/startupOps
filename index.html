@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StartupOps - Modern Startup Management Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Premium Emerald Dark Theme */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #1a1a1a;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Premium Button Gradient */
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #1a1a1a;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e5e5;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+        }
+        
+        /* Premium Card Hover Effects */
+        .card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+            border-right: 1px solid #e5e5e5;
+            height: 100vh;
+            position: fixed;
+            width: 240px;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-item {
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar-item:hover {
+            background: #f0fdf4;
+            color: #10b981;
+            transform: translateX(4px);
+        }
+        
+        .sidebar-item.active {
+            background: #d1fae5;
+            color: #059669;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .header-bar {
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 1rem 2rem;
+            margin-left: 240px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .progress-bar {
+            background: #f3f4f6;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-gray {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e5e5;
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        /* Task Card Premium Styles */
+        .task-card {
+            border: 1px solid #e5e5e5;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+            transform: translateX(4px);
+        }
+
+        /* Delete Button Premium Effect */
+        .delete-btn {
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.1);
+            color: #dc2626;
+        }
+
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+            color: #10b981;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            border-radius: 9999px;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Pricing Card */
+        .pricing-card {
+            border: 2px solid #e5e5e5;
+            border-radius: 1rem;
+            padding: 2rem;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            border-color: #10b981;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.2);
+        }
+
+        .pricing-card.featured {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Onboarding & Modal Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .onboarding-step {
+            transition: opacity 0.3s ease;
+        }
+
+        #modalOverlay.show {
+            display: flex !important;
+        }
+
+        /* Feedback List */
+        .feedback-item {
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .feedback-item:hover {
+            border-color: #10b981;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Premium Investor Card Styles */
+        .investor-team-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+            border: 2px solid #e5e5e5;
+            border-radius: 1rem;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .investor-team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .investor-team-card:hover::before {
+            left: 100%;
+        }
+
+        .investor-team-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.25);
+            border-color: #10b981;
+        }
+
+        .investor-team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .investor-detail-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .investor-detail-card:hover {
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+        }
+
+        .progress-metric-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            border: 1px solid #d1fae5;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-metric-card:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .member-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .member-card:hover {
+            background: #f0fdf4;
+            border-color: #10b981;
+            transform: translateX(4px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LANDING PAGE -->
+    <div id="landingPage" class="page active">
+        <header class="bg-white border-b border-gray-200">
+            <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="text-xl font-semibold text-gray-900">StartupOps</div>
+                <button onclick="showLogin()" class="btn-primary">Get Started</button>
+            </div>
+        </header>
+
+        <section class="max-w-6xl mx-auto px-6 py-20 text-center">
+            <h1 class="text-5xl font-bold text-white mb-6">
+                Modern Startup Management Platform
+            </h1>
+            <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+                Validate ideas, manage execution, track progress, and prepare for investors—all in one professional platform.
+            </p>
+            <button onclick="showLogin()" class="btn-primary text-lg">
+                Get Started →
+            </button>
+        </section>
+
+        <section class="max-w-6xl mx-auto px-6 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="card">
+                    <div class="text-2xl mb-3">💡</div>
+                    <h3 class="text-lg font-semibold mb-2">Idea Validation</h3>
+                    <p class="text-gray-600 text-sm">Validate your startup concept with structured frameworks and feedback.</p>
+                </div>
+                <div class="card">
+                    <div class="text-2xl mb-3">⚡</div>
+                    <h3 class="text-lg font-semibold mb-2">Execution Management</h3>
+                    <p class="text-gray-600 text-sm">Track milestones, manage teams, and execute with precision.</p>
+                </div>
+                <div class="card">
+                    <div class="text-2xl mb-3">📊</div>
+                    <h3 class="text-lg font-semibold mb-2">Analytics & Insights</h3>
+                    <p class="text-gray-600 text-sm">Monitor progress, identify bottlenecks, and make data-driven decisions.</p>
+                </div>
+                <div class="card">
+                    <div class="text-2xl mb-3">🎯</div>
+                    <h3 class="text-lg font-semibold mb-2">Investor Readiness</h3>
+                    <p class="text-gray-600 text-sm">Professional dashboards and metrics ready to share with investors.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="border-t border-gray-700 mt-20">
+            <div class="max-w-6xl mx-auto px-6 py-8 text-center text-gray-400 text-sm">
+                <p>© 2026 StartupOps. Professional startup management platform.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="page">
+        <div class="min-h-screen flex items-center justify-center px-6">
+            <div class="card max-w-md w-full">
+                <h2 class="text-2xl font-bold mb-6 text-center">Welcome to StartupOps</h2>
+                
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Username / Email</label>
+                        <input type="text" id="loginUsername" class="input-field" required placeholder="Enter username">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Password</label>
+                        <input type="password" id="loginPassword" class="input-field" required placeholder="Enter password">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Select Role</label>
+                        <select id="loginRole" class="input-field" required>
+                            <option value="">Choose your role</option>
+                            <option value="founder">Founder</option>
+                            <option value="cofounder">Co-Founder</option>
+                            <option value="team">Team Member</option>
+                            <option value="mentor">Mentor / Advisor</option>
+                            <option value="investor">Investor</option>
+                        </select>
+                    </div>
+                    
+                    <div id="loginError" class="mb-4 text-red-600 text-sm hidden"></div>
+                    
+                    <button type="submit" class="btn-primary w-full">Login</button>
+                    
+                    <div class="mt-4 text-center">
+                        <button type="button" onclick="showSignup()" class="text-sm text-emerald-600 hover:text-emerald-800 font-medium">
+                            Don't have an account? Create one
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button type="button" onclick="showLanding()" class="text-sm text-gray-600 hover:text-gray-900">
+                            ← Back to home
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <p class="text-xs text-gray-500 text-center mb-3">Demo Credentials:</p>
+                    <p class="text-xs text-gray-600">👑 Founder: admin / admin123</p>
+                    <p class="text-xs text-gray-600">👥 Team: member / member123</p>
+                    <p class="text-xs text-gray-600">🎓 Mentor: mentor / mentor123</p>
+                    <p class="text-xs text-gray-600">💼 Investor: investor / investor123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGNUP PAGE -->
+    <div id="signupPage" class="page">
+        <div class="min-h-screen flex items-center justify-center px-6">
+            <div class="card max-w-md w-full">
+                <h2 class="text-2xl font-bold mb-6 text-center">Create Your Account</h2>
+                
+                <form id="signupForm" onsubmit="handleSignup(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Full Name</label>
+                        <input type="text" id="signupName" class="input-field" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Email</label>
+                        <input type="email" id="signupEmail" class="input-field" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Username</label>
+                        <input type="text" id="signupUsername" class="input-field" required placeholder="Choose a username">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Password</label>
+                        <input type="password" id="signupPassword" class="input-field" required placeholder="Create a password" minlength="6">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="input-field" required placeholder="Confirm your password" minlength="6">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2 text-gray-700">Select Your Role</label>
+                        <select id="signupRole" class="input-field" required>
+                            <option value="">Choose your role</option>
+                            <option value="founder">Founder</option>
+                            <option value="cofounder">Co-Founder</option>
+                            <option value="team">Team Member</option>
+                            <option value="mentor">Mentor / Advisor</option>
+                            <option value="investor">Investor</option>
+                        </select>
+                    </div>
+                    
+                    <div id="signupError" class="mb-4 text-red-600 text-sm hidden"></div>
+                    <div id="signupSuccess" class="mb-4 text-green-600 text-sm hidden"></div>
+                    
+                    <button type="submit" class="btn-primary w-full">Create Account</button>
+                    
+                    <div class="mt-4 text-center">
+                        <button type="button" onclick="showLogin()" class="text-sm text-emerald-600 hover:text-emerald-800 font-medium">
+                            Already have an account? Login
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button type="button" onclick="showLanding()" class="text-sm text-gray-600 hover:text-gray-900">
+                            ← Back to home
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOUNDER ONBOARDING FLOW -->
+    <div id="onboardingPage" class="page">
+        <div class="min-h-screen flex items-center justify-center px-6" style="background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);">
+            <div class="card max-w-2xl w-full shadow-xl" style="animation: fadeInUp 0.4s ease-out;">
+                <div class="flex justify-center mb-8">
+                    <div class="flex items-center gap-2">
+                        <div id="step1Indicator" class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-semibold transition-all">1</div>
+                        <div class="w-16 h-1 bg-gray-200 transition-all" id="progressLine"></div>
+                        <div id="step2Indicator" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-semibold transition-all">2</div>
+                    </div>
+                </div>
+
+                <div id="onboardingStep1" class="onboarding-step">
+                    <div class="text-center mb-8">
+                        <div class="text-4xl mb-4">🚀</div>
+                        <h2 class="text-3xl font-bold mb-3">Welcome to StartupOps</h2>
+                        <p class="text-gray-600">Let's set up your startup profile in just 2 steps</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-3 text-gray-700">What's your startup or team name?</label>
+                        <input 
+                            type="text" 
+                            id="onboardingStartupName" 
+                            class="input-field text-lg"
+                            placeholder="e.g., TechVenture AI, Innovate Labs"
+                            autocomplete="off"
+                        >
+                        <p class="text-xs text-gray-500 mt-2">You can change this later in settings</p>
+                    </div>
+
+                    <button onclick="goToOnboardingStep2()" class="btn-primary w-full text-lg py-3">
+                        Continue →
+                    </button>
+                </div>
+
+                <div id="onboardingStep2" class="onboarding-step" style="display: none;">
+                    <div class="text-center mb-8">
+                        <div class="text-4xl mb-4">💡</div>
+                        <h2 class="text-3xl font-bold mb-3">What's your vision?</h2>
+                        <p class="text-gray-600">Describe what you're building and why it matters</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-3 text-gray-700">Vision Statement</label>
+                        <textarea 
+                            id="onboardingStartupVision" 
+                            class="input-field text-lg"
+                            rows="4"
+                            placeholder="Describe your startup vision..."
+                        ></textarea>
+                        
+                        <div class="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                            <p class="text-xs font-medium text-emerald-900 mb-2">💭 Need inspiration? Consider:</p>
+                            <ul class="text-xs text-emerald-800 space-y-1">
+                                <li>• Who is this for?</li>
+                                <li>• What problem are you solving?</li>
+                                <li>• What makes your solution unique?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="goBackToStep1()" class="btn-secondary flex-1 py-3">
+                            ← Back
+                        </button>
+                        <button onclick="completeOnboarding()" class="btn-primary flex-1 py-3">
+                            Complete Setup ✓
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOUNDER DASHBOARD -->
+    <div id="founderDashboard" class="page">
+        <div class="sidebar">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold">StartupOps</h2>
+                <p class="text-xs text-gray-500 mt-1" id="founderName">Founder Dashboard</p>
+            </div>
+            
+            <nav class="py-4">
+                <div class="sidebar-item active" onclick="showFounderSection('overview', this)">
+                    📊 Dashboard Overview
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('manage', this)">
+                    🚀 Manage Startup
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('team', this)">
+                    👥 Team Management
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('tasks', this)">
+                    📋 Task Management
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('analytics', this)">
+                    📈 Analytics & Insights
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('teamoverview', this)">
+                    👥 Team Overview
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('feedback', this)">
+                    💬 Feedback & Decisions
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('investor', this)">
+                    💼 Investor Preview
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('subscription', this)">
+                    💳 Subscription
+                </div>
+                <div class="sidebar-item" onclick="showFounderSection('settings', this)">
+                    ⚙️ Settings
+                </div>
+            </nav>
+            
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+                <button onclick="logout()" class="btn-secondary w-full text-sm">Logout</button>
+            </div>
+        </div>
+
+        <div class="header-bar flex justify-between items-center">
+            <h1 class="text-xl font-semibold" id="sectionTitle">Dashboard Overview</h1>
+            <div class="flex items-center gap-4">
+                <div class="notification-bell" onclick="showNotifications()">
+                    🔔
+                    <span id="founderNotificationBadge" class="notification-badge" style="display: none;">0</span>
+                </div>
+                <div class="text-sm text-gray-600" id="currentUserDisplay"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="founderOverview" class="founder-section">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="card lg:col-span-2">
+                        <h3 class="font-semibold mb-4">Startup Snapshot</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <span class="text-sm text-gray-500">Name:</span>
+                                <p class="font-medium" id="startupNameDisplay">TechVenture AI</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">Stage:</span>
+                                <span class="badge badge-blue ml-2" id="startupStageDisplay">Idea</span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500">Vision:</span>
+                                <p class="text-sm mt-1" id="startupVisionDisplay">Revolutionizing AI-powered business solutions for SMBs</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Quick Actions</h3>
+                        <div class="space-y-2">
+                            <button onclick="showFounderSection('team', this)" class="btn-secondary w-full text-sm">Add Team Member</button>
+                            <button onclick="showFounderSection('manage', this)" class="btn-secondary w-full text-sm">Update Milestones</button>
+                            <button onclick="showFounderSection('investor', this)" class="btn-secondary w-full text-sm">View Investor Preview</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Milestone Progress</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Product Development</span>
+                                <span class="text-sm text-gray-500">75%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Market Research</span>
+                                <span class="text-sm text-gray-500">90%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Customer Acquisition</span>
+                                <span class="text-sm text-gray-500">45%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Recent Alerts</h3>
+                        <div class="space-y-3">
+                            <div class="text-sm p-3 bg-emerald-50 rounded border-l-4 border-emerald-500">
+                                New feedback from mentor available
+                            </div>
+                            <div class="text-sm p-3 bg-green-50 rounded border-l-4 border-green-500">
+                                Milestone "MVP Launch" completed
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">Team Summary</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Total Members:</span>
+                                <span class="font-medium" id="founderTeamCount">0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Active Tasks:</span>
+                                <span class="font-medium" id="founderActiveTasks">0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Completed This Week:</span>
+                                <span class="font-medium" id="founderCompletedTasks">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="founderManage" class="founder-section" style="display: none;">
+                <div class="card max-w-2xl">
+                    <h3 class="font-semibold mb-6">Manage Startup Details</h3>
+                    
+                    <form onsubmit="updateStartup(event)">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Startup Name</label>
+                            <input type="text" id="editStartupName" class="input-field" value="TechVenture AI">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Stage</label>
+                            <select id="editStartupStage" class="input-field">
+                                <option value="Idea">Idea</option>
+                                <option value="MVP">MVP</option>
+                                <option value="Growth">Growth</option>
+                                <option value="Scale">Scale</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Vision</label>
+                            <textarea id="editStartupVision" class="input-field" rows="3">Revolutionizing AI-powered business solutions for SMBs</textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </form>
+                </div>
+                
+                <div class="card mt-6 max-w-2xl">
+                    <h3 class="font-semibold mb-4">Milestones</h3>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-gray-50 rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">Product Development</p>
+                                <p class="text-sm text-gray-500">Complete MVP version</p>
+                            </div>
+                            <span class="badge badge-blue">In Progress</span>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">Market Research</p>
+                                <p class="text-sm text-gray-500">Identify target segments</p>
+                            </div>
+                            <span class="badge badge-green">Completed</span>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">Customer Acquisition</p>
+                                <p class="text-sm text-gray-500">Reach 100 beta users</p>
+                            </div>
+                            <span class="badge badge-gray">Pending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="founderTeam" class="founder-section" style="display: none;">
+                <div class="card mb-6 max-w-2xl">
+                    <h3 class="font-semibold mb-4">Add Team Member</h3>
+                    <form onsubmit="addTeamMember(event)">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-700">Name</label>
+                                <input type="text" id="teamMemberName" class="input-field" required placeholder="Full Name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-700">Email</label>
+                                <input type="email" id="teamMemberEmail" class="input-field" required placeholder="member@example.com">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Role</label>
+                            <select id="teamMemberRole" class="input-field" required>
+                                <option value="cofounder">Co-Founder</option>
+                                <option value="team">Team Member</option>
+                                <option value="mentor">Mentor</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Member</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Team Members</h3>
+                    <div id="teamMembersList">
+                        <!-- Team members will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOUNDER TASKS SECTION -->
+            <div id="founderTasks" class="founder-section" style="display: none;">
+                <div class="card max-w-4xl mb-6">
+                    <h3 class="font-semibold mb-4">Add New Task</h3>
+                    <form onsubmit="addNewTask(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-700">Task Title</label>
+                                <input type="text" id="newTaskTitle" class="input-field" required placeholder="Enter task description">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-700">Assign To</label>
+                                <select id="newTaskAssignee" class="input-field" required>
+                                    <option value="">Select team member</option>
+                                    <option value="team">Team Member</option>
+                                    <option value="cofounder">Co-Founder</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Due Date</label>
+                            <input type="date" id="newTaskDueDate" class="input-field" required>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            Add Task
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 class="font-semibold mb-4">All Tasks</h3>
+                    <div id="founderTasksList" class="space-y-3">
+                        <!-- Tasks will be populated here -->
+                    </div>
+                    <div id="noTasksMessage" class="text-center py-12 text-gray-500" style="display: none;">
+                        <div class="text-4xl mb-3">📋</div>
+                        <p>No tasks yet. Create your first task above!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEAM OVERVIEW SECTION -->
+            <div id="founderTeamoverview" class="founder-section" style="display: none;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="card">
+                        <p class="text-sm text-gray-500 mb-1">Total Tasks</p>
+                        <p class="text-4xl font-bold text-emerald-600" id="totalTasksCount">0</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-sm text-gray-500 mb-1">Completed Tasks</p>
+                        <p class="text-4xl font-bold text-green-600" id="completedTasksCount">0</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-sm text-gray-500 mb-1">Overall Progress</p>
+                        <p class="text-4xl font-bold" id="overallProgressPercent">0%</p>
+                    </div>
+                </div>
+
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Team Progress</h3>
+                    <div class="mb-2 flex justify-between text-sm">
+                        <span>Overall Completion Rate</span>
+                        <span class="font-medium" id="progressText">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="teamProgressFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Task Status Breakdown</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Pending</span>
+                                <span class="font-medium" id="pendingCount">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="pendingBar" style="width: 0%; background: #f59e0b;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">In Progress</span>
+                                <span class="font-medium" id="inProgressCountOverview">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="inProgressBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Completed</span>
+                                <span class="font-medium" id="completedCountOverview">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="completedBar" style="width: 0%; background: #10b981;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="founderAnalytics" class="founder-section" style="display: none;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="card">
+                        <p class="text-sm text-gray-500 mb-1">Validation Score</p>
+                        <p class="text-3xl font-bold text-emerald-600">8.5/10</p>
+                        <p class="text-xs text-gray-500 mt-2">Strong market fit</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-sm text-gray-500 mb-1">Execution Rate</p>
+                        <p class="text-3xl font-bold text-green-600">73%</p>
+                        <p class="text-xs text-gray-500 mt-2">Above target</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-sm text-gray-500 mb-1">Team Productivity</p>
+                        <p class="text-3xl font-bold">92%</p>
+                        <p class="text-xs text-gray-500 mt-2">Excellent performance</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Progress Trends</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Overall Execution</span>
+                                <span class="text-sm text-gray-500">73%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 73%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Technical Development</span>
+                                <span class="text-sm text-gray-500">82%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm">Go-to-Market</span>
+                                <span class="text-sm text-gray-500">65%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Bottleneck Indicators</h3>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-yellow-50 rounded border-l-4 border-yellow-500">
+                            <p class="font-medium text-sm">Customer Acquisition</p>
+                            <p class="text-xs text-gray-600 mt-1">Behind schedule by 2 weeks</p>
+                        </div>
+                        <div class="p-4 bg-emerald-50 rounded border-l-4 border-emerald-500">
+                            <p class="font-medium text-sm">Team Hiring</p>
+                            <p class="text-xs text-gray-600 mt-1">Need 2 more engineers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="founderFeedback" class="founder-section" style="display: none;">
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Mentor Feedback</h3>
+                    <div id="founderFeedbackList" class="space-y-3">
+                        <!-- Feedback will be rendered here -->
+                    </div>
+                    <div id="noFeedbackMessage" class="text-center py-12 text-gray-500">
+                        <div class="text-4xl mb-3">💬</div>
+                        <p>No feedback received yet</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Decision History</h3>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-gray-50 rounded">
+                            <p class="font-medium text-sm">Decided: Focus on mobile app first</p>
+                            <p class="text-xs text-gray-500 mt-1">Jan 15, 2026 • Based on user research feedback</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded">
+                            <p class="font-medium text-sm">Decided: Partner with AWS for infrastructure</p>
+                            <p class="text-xs text-gray-500 mt-1">Jan 10, 2026 • Cost and scalability considerations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="founderInvestor" class="founder-section" style="display: none;">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-emerald-900">This is a read-only preview of what investors will see</p>
+                </div>
+                
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Startup Overview</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm text-gray-500">Company Name</p>
+                            <p class="font-medium">TechVenture AI</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Current Stage</p>
+                            <p class="font-medium">MVP</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Founded</p>
+                            <p class="font-medium">January 2026</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Team Size</p>
+                            <p class="font-medium" id="founderInvestorTeamSize">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Key Metrics</h3>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Beta Users</p>
+                            <p class="text-2xl font-bold">245</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">MRR Growth</p>
+                            <p class="text-2xl font-bold">+35%</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Runway</p>
+                            <p class="text-2xl font-bold">18mo</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Pitch Summary</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        TechVenture AI is building the next generation of AI-powered business intelligence tools for small and medium businesses. Our platform combines advanced analytics with intuitive design, making enterprise-level insights accessible to businesses of all sizes. With strong early traction and a clear path to profitability, we're positioned to capture significant market share in the $12B SMB software market.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SUBSCRIPTION SECTION -->
+            <div id="founderSubscription" class="founder-section" style="display: none;">
+                <div class="mb-8 text-center">
+                    <h2 class="text-3xl font-bold mb-2">Choose Your Plan</h2>
+                    <p class="text-gray-600">Select the perfect plan for your startup journey</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <!-- Free Plan -->
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Free</h3>
+                        <div class="text-4xl font-bold mb-4">$0<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">Perfect for getting started</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Up to 3 team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>5 tasks per month</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Basic analytics</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Email support</span>
+                            </li>
+                        </ul>
+                        <button onclick="selectPlan('free')" class="btn-secondary w-full">Current Plan</button>
+                    </div>
+
+                    <!-- Pro Plan -->
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">POPULAR</div>
+                        <h3 class="text-xl font-bold mb-2">Pro</h3>
+                        <div class="text-4xl font-bold mb-4">$29<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For growing startups</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited tasks</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Advanced analytics</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Priority support</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Mentor feedback system</span>
+                            </li>
+                        </ul>
+                        <button onclick="selectPlan('pro')" class="btn-primary w-full">Upgrade to Pro</button>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold mb-4">$99<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For established companies</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Everything in Pro</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Custom integrations</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Dedicated account manager</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>24/7 phone support</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>White-label options</span>
+                            </li>
+                        </ul>
+                        <button onclick="selectPlan('enterprise')" class="btn-primary w-full">Contact Sales</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="founderSettings" class="founder-section" style="display: none;">
+                <div class="card max-w-2xl mb-6">
+                    <h3 class="font-semibold mb-4">Startup Preferences</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="mr-3">
+                                <span class="text-sm">Email notifications for new feedback</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="mr-3">
+                                <span class="text-sm">Weekly progress reports</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" class="mr-3">
+                                <span class="text-sm">Allow team members to invite others</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card max-w-2xl">
+                    <h3 class="font-semibold mb-4">Account Settings</h3>
+                    <div class="space-y-3">
+                        <button class="btn-secondary">Change Password</button>
+                        <button class="btn-secondary">Update Profile</button>
+                        <button onclick="logout()" class="btn-secondary text-red-600">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEAM MEMBER DASHBOARD -->
+    <div id="teamDashboard" class="page">
+        <div class="sidebar">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold">StartupOps</h2>
+                <p class="text-xs text-gray-500 mt-1">Team Member</p>
+            </div>
+            
+            <nav class="py-4">
+                <div class="sidebar-item active" onclick="showTeamSection('tasks', this)">📋 My Tasks</div>
+                <div class="sidebar-item" onclick="showTeamSection('overview', this)">📊 Team Overview</div>
+                <div class="sidebar-item" onclick="showTeamSection('subscription', this)">💳 Subscription</div>
+                <div class="sidebar-item" onclick="showTeamSection('settings', this)">⚙️ Settings</div>
+            </nav>
+            
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+                <button onclick="logout()" class="btn-secondary w-full text-sm">Logout</button>
+            </div>
+        </div>
+
+        <div class="header-bar flex justify-between items-center">
+            <h1 class="text-xl font-semibold" id="teamSectionTitle">My Tasks</h1>
+            <div class="flex items-center gap-4">
+                <div class="notification-bell" onclick="showNotifications()">
+                    🔔
+                    <span id="teamNotificationBadge" class="notification-badge" style="display: none;">0</span>
+                </div>
+                <div class="text-sm text-gray-600" id="teamUserDisplay"></div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="teamTasks" class="team-section">
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">My Assigned Tasks</h3>
+                    <div id="teamMemberTasksList" class="space-y-3">
+                        <!-- Tasks will be populated here -->
+                    </div>
+                    <div id="noTeamTasksMessage" class="text-center py-12 text-gray-500" style="display: none;">
+                        <div class="text-4xl mb-3">✅</div>
+                        <p>No tasks assigned yet!</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">This Week</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Tasks Assigned:</span>
+                                <span class="font-medium" id="teamTotalTasks">0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Completed:</span>
+                                <span class="font-medium" id="teamCompletedTasks">0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">In Progress:</span>
+                                <span class="font-medium" id="teamInProgressTasks">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">My Progress</h3>
+                        <div class="mb-2 flex justify-between text-sm">
+                            <span>Completion Rate</span>
+                            <span class="font-medium" id="teamProgressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="teamProgressBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Section for Team Members -->
+                <div class="card mt-6">
+                    <h3 class="font-semibold mb-4">Mentor Feedback</h3>
+                    <div id="teamFeedbackList" class="space-y-3">
+                        <!-- Feedback will be rendered here -->
+                    </div>
+                    <div id="noTeamFeedbackMessage" class="text-center py-12 text-gray-500">
+                        <div class="text-4xl mb-3">💬</div>
+                        <p>No feedback received yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teamOverview" class="team-section" style="display: none;">
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Team Statistics</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Total Team Members:</span>
+                            <span class="font-medium" id="teamOverviewCount">0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Active Projects:</span>
+                            <span class="font-medium">3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teamSubscription" class="team-section" style="display: none;">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-blue-900">View-only access. Contact your Founder to upgrade the plan.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Free</h3>
+                        <div class="text-4xl font-bold mb-4">$0<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">Perfect for getting started</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Up to 3 team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>5 tasks per month</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Basic analytics</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>Current Plan</button>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">POPULAR</div>
+                        <h3 class="text-xl font-bold mb-2">Pro</h3>
+                        <div class="text-4xl font-bold mb-4">$29<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For growing startups</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited tasks</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Advanced analytics</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>Contact Founder</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold mb-4">$99<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For established companies</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Everything in Pro</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Custom integrations</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Dedicated support</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>Contact Founder</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="teamSettings" class="team-section" style="display: none;">
+                <div class="card max-w-2xl">
+                    <h3 class="font-semibold mb-4">Account Settings</h3>
+                    <div class="space-y-3">
+                        <button class="btn-secondary">Change Password</button>
+                        <button class="btn-secondary">Update Profile</button>
+                        <button onclick="logout()" class="btn-secondary text-red-600">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENTOR DASHBOARD -->
+    <div id="mentorDashboard" class="page">
+        <div class="sidebar">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold">StartupOps</h2>
+                <p class="text-xs text-gray-500 mt-1">Mentor / Advisor</p>
+            </div>
+            
+            <nav class="py-4">
+                <div class="sidebar-item active" onclick="showMentorSection('analytics', this)">📊 Analytics</div>
+                <div class="sidebar-item" onclick="showMentorSection('feedback', this)">💬 Submit Feedback</div>
+                <div class="sidebar-item" onclick="showMentorSection('tasks', this)">📋 View Tasks</div>
+                <div class="sidebar-item" onclick="showMentorSection('subscription', this)">💳 Subscription</div>
+                <div class="sidebar-item" onclick="showMentorSection('settings', this)">⚙️ Settings</div>
+            </nav>
+            
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+                <button onclick="logout()" class="btn-secondary w-full text-sm">Logout</button>
+            </div>
+        </div>
+
+        <div class="header-bar flex justify-between items-center">
+            <h1 class="text-xl font-semibold" id="mentorSectionTitle">Startup Analytics</h1>
+            <div class="text-sm text-gray-600" id="mentorUserDisplay"></div>
+        </div>
+
+        <div class="main-content">
+            <div id="mentorAnalytics" class="mentor-section">
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Startup: TechVenture AI</h3>
+                    <div class="grid grid-cols-3 gap-6">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Validation Score</p>
+                            <p class="text-2xl font-bold text-emerald-600">8.5/10</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Execution Rate</p>
+                            <p class="text-2xl font-bold text-green-600" id="mentorExecutionRate">0%</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Current Stage</p>
+                            <p class="text-2xl font-bold">MVP</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Team Progress Overview</h3>
+                    <canvas id="mentorProgressChart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Team Members & Progress</h3>
+                    <div id="mentorTeamMembersList">
+                        <!-- Team members will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="mentorFeedback" class="mentor-section" style="display: none;">
+                <div class="card mb-6">
+                    <h3 class="font-semibold mb-4">Submit Feedback</h3>
+                    <form onsubmit="submitMentorFeedback(event)">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Title</label>
+                            <input type="text" id="feedbackTitle" class="input-field" placeholder="Brief summary" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Feedback</label>
+                            <textarea id="feedbackContent" class="input-field" rows="4" placeholder="Your detailed feedback..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Feedback</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Previous Feedback</h3>
+                    <div id="mentorFeedbackHistory" class="space-y-3">
+                        <!-- Feedback history will be rendered here -->
+                    </div>
+                    <div id="noMentorFeedbackHistory" class="text-center py-12 text-gray-500">
+                        <div class="text-4xl mb-3">💬</div>
+                        <p>No feedback submitted yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mentorTasks" class="mentor-section" style="display: none;">
+                <div class="card">
+                    <h3 class="font-semibold mb-4">All Team Tasks (Read-Only)</h3>
+                    <div id="mentorTasksList" class="space-y-3">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                    <div id="noMentorTasksMessage" class="text-center py-12 text-gray-500">
+                        <div class="text-4xl mb-3">📋</div>
+                        <p>No tasks created yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mentorSubscription" class="mentor-section" style="display: none;">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-blue-900">View-only access. Mentors can view subscription plans.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Free</h3>
+                        <div class="text-4xl font-bold mb-4">$0<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">Perfect for getting started</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Up to 3 team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>5 tasks per month</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>View Only</button>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">POPULAR</div>
+                        <h3 class="text-xl font-bold mb-2">Pro</h3>
+                        <div class="text-4xl font-bold mb-4">$29<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For growing startups</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited tasks</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>View Only</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold mb-4">$99<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For established companies</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Everything in Pro</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Custom integrations</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>View Only</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mentorSettings" class="mentor-section" style="display: none;">
+                <div class="card max-w-2xl">
+                    <h3 class="font-semibold mb-4">Account Settings</h3>
+                    <div class="space-y-3">
+                        <button class="btn-secondary">Change Password</button>
+                        <button class="btn-secondary">Update Profile</button>
+                        <button onclick="logout()" class="btn-secondary text-red-600">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVESTOR DASHBOARD -->
+    <div id="investorDashboard" class="page">
+        <div class="sidebar">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold">StartupOps</h2>
+                <p class="text-xs text-gray-500 mt-1">Investor View</p>
+            </div>
+            
+            <nav class="py-4">
+                <div class="sidebar-item active" onclick="showInvestorSection('teams', this)">🏢 Startup Teams</div>
+                <div class="sidebar-item" onclick="showInvestorSection('teamDetail', this)" id="teamDetailNav" style="display: none;">📋 Team Details</div>
+                <div class="sidebar-item" onclick="showInvestorSection('metrics', this)">📈 Metrics</div>
+                <div class="sidebar-item" onclick="showInvestorSection('pitch', this)">💼 Pitch</div>
+                <div class="sidebar-item" onclick="showInvestorSection('subscription', this)">💳 Subscription</div>
+            </nav>
+            
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+                <button onclick="logout()" class="btn-secondary w-full text-sm">Logout</button>
+            </div>
+        </div>
+
+        <div class="header-bar flex justify-between items-center">
+            <h1 class="text-xl font-semibold" id="investorSectionTitle">Investment Opportunities</h1>
+            <div class="text-sm text-gray-600" id="investorUserDisplay"></div>
+        </div>
+
+        <div class="main-content">
+            <!-- STARTUP TEAMS OVERVIEW -->
+            <div id="investorTeams" class="investor-section">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold mb-2">Discover Startups</h2>
+                    <p class="text-gray-600">Explore promising startups seeking investment</p>
+                </div>
+
+                <div id="investorTeamsList">
+                    <!-- Team cards will be rendered here -->
+                </div>
+
+                <div id="noTeamsAvailable" class="text-center py-20" style="display: none;">
+                    <div class="text-6xl mb-4">🏢</div>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">No Startups Available</h3>
+                    <p class="text-gray-500">Check back later for new investment opportunities</p>
+                </div>
+            </div>
+
+            <!-- TEAM DETAIL VIEW -->
+            <div id="investorTeamDetail" class="investor-section" style="display: none;">
+                <button onclick="backToTeamsList()" class="btn-secondary mb-6">
+                    ← Back to Teams
+                </button>
+
+                <div class="fade-in">
+                    <!-- Team Header -->
+                    <div class="investor-detail-card">
+                        <h1 class="text-4xl font-bold mb-4" id="detailTeamName" style="text-transform: uppercase; background: linear-gradient(135deg, #059669 0%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h1>
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="badge badge-blue text-sm" id="detailTeamStage">Loading...</span>
+                            <span class="text-sm text-gray-500">•</span>
+                            <span class="text-sm text-gray-500" id="detailTeamMembers">0 Team Members</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="font-semibold text-lg mb-2">Vision</h3>
+                            <p class="text-gray-700 leading-relaxed" id="detailTeamVision"></p>
+                        </div>
+                    </div>
+
+                    <!-- Team Members -->
+                    <div class="investor-detail-card">
+                        <h3 class="font-semibold text-xl mb-4">Team Members</h3>
+                        <div id="detailTeamMembersList">
+                            <!-- Members will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Progress Tracking -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="progress-metric-card">
+                            <h3 class="font-semibold text-lg mb-4">Progress - Last 7 Days</h3>
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">Tasks Completed</span>
+                                    <span class="font-medium" id="weekTasksCompleted">0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="weekProgressBar" style="width: 0%;"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2" id="weekProgressPercent">0% completion rate</p>
+                            </div>
+                        </div>
+
+                        <div class="progress-metric-card">
+                            <h3 class="font-semibold text-lg mb-4">Progress - Last 30 Days</h3>
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-gray-600">Tasks Completed</span>
+                                    <span class="font-medium" id="monthTasksCompleted">0</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="monthProgressBar" style="width: 0%;"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2" id="monthProgressPercent">0% completion rate</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Statistics -->
+                    <div class="investor-detail-card">
+                        <h3 class="font-semibold text-xl mb-4">Overall Statistics</h3>
+                        <div class="grid grid-cols-3 gap-6">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Total Tasks</p>
+                                <p class="text-3xl font-bold text-emerald-600" id="detailTotalTasks">0</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Completed</p>
+                                <p class="text-3xl font-bold text-green-600" id="detailCompletedTasks">0</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Overall Progress</p>
+                                <p class="text-3xl font-bold" id="detailOverallProgress">0%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXISTING SECTIONS -->
+            <div id="investorMetrics" class="investor-section" style="display: none;">
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Detailed Metrics</h3>
+                    <p class="text-gray-600">Comprehensive analytics and performance indicators coming soon.</p>
+                </div>
+            </div>
+
+            <div id="investorPitch" class="investor-section" style="display: none;">
+                <div class="card">
+                    <h3 class="font-semibold mb-4">Pitch Deck</h3>
+                    <p class="text-gray-600">Full pitch deck and presentation materials coming soon.</p>
+                </div>
+            </div>
+
+            <div id="investorSubscription" class="investor-section" style="display: none;">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-blue-900">View-only access. Investors can view subscription plans.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Free</h3>
+                        <div class="text-4xl font-bold mb-4">$0<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">Perfect for getting started</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Up to 3 team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>5 tasks per month</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>View Only</button>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">POPULAR</div>
+                        <h3 class="text-xl font-bold mb-2">Pro</h3>
+                        <div class="text-4xl font-bold mb-4">$29<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For growing startups</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited team members</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Unlimited tasks</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>View Only</button>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold mb-4">$99<span class="text-lg text-gray-500">/mo</span></div>
+                        <p class="text-gray-600 mb-6">For established companies</p>
+                        <ul class="space-y-3 mb-6">
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Everything in Pro</span>
+                            </li>
+                            <li class="text-sm flex items-start">
+                                <span class="text-green-600 mr-2">✓</span>
+                                <span>Custom integrations</span>
+                            </li>
+                        </ul>
+                        <button class="btn-secondary w-full" disabled>View Only</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREMIUM MODAL SYSTEM -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="backdrop-filter: blur(4px);">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 transform transition-all max-h-[80vh] overflow-y-auto" style="animation: modalSlideIn 0.3s ease-out;">
+            <div class="p-6">
+                <div id="modalIcon" class="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl"></div>
+                <h3 id="modalTitle" class="text-xl font-semibold text-center mb-2"></h3>
+                <div id="modalMessage" class="text-gray-600 text-center mb-6 text-sm"></div>
+                <div id="modalContent" class="mb-6"></div>
+                <button id="modalButton" class="btn-primary w-full">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
